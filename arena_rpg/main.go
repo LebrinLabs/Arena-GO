@@ -7,6 +7,7 @@ import (
 
 	"arena_rpg/internal/personagem"
 	"arena_rpg/internal/dados"
+	"arena_rpg/internal/combate"
 )
 
 func main() {
@@ -22,6 +23,8 @@ func main() {
 	mux.HandleFunc("GET /personagens", personagem.ListarPersonagens)
 	mux.HandleFunc("GET /personagens/{id}", personagem.BuscarPersonagemPorId)
 	mux.HandleFunc("POST /rolar", dados.RolarHandler)
+	mux.HandleFunc("POST /combate", combate.CombateHandler)
+
 
 
 	log.Println("Servidor rodando na porta 8080")
