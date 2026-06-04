@@ -1,4 +1,4 @@
-package main
+package personagem
 
 import "sync"
 
@@ -20,7 +20,7 @@ var (
 
 	personagens = make(map[int]Personagem)
 	proximoId = 1
-	mu = sync.Mutex
+	mu sync.Mutex
 
 )
 
