@@ -3,6 +3,7 @@ package personagem
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 func CriarPersonagem(w http.ResponseWriter, r *http.Request) {
@@ -39,4 +40,25 @@ func ListarPersonagens(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(lista)
 
+}
+
+func BuscarPersonagemPorId( w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "id inválido", http.StatusBadRequest)
+		return
+	}
+
+	mu.Lock()
+	p, ok := personagens[id]
+	mu.Unlock()
+	
+	if !ok {
+		http.Error(w, "personagem não encontrado", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(p)
 }

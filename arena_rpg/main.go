@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"arena_rpg/internal/personagem"
-
+	"arena_rpg/internal/dados"
 )
 
 func main() {
@@ -20,6 +20,9 @@ func main() {
 
 	mux.HandleFunc("POST /personagens", personagem.CriarPersonagem)
 	mux.HandleFunc("GET /personagens", personagem.ListarPersonagens)
+	mux.HandleFunc("GET /personagens/{id}", personagem.BuscarPersonagemPorId)
+	mux.HandleFunc("POST /rolar", dados.RolarHandler)
+
 
 	log.Println("Servidor rodando na porta 8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
