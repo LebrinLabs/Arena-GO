@@ -28,7 +28,7 @@ func CombateHandler(w http.ResponseWriter, r *http.Request) {
 
 	resultado := Resolver(atacante, defensor)
 
-	personagem.DarXP(resultado.Vencedor.Id, 50)
+	personagem.DarXP(resultado.Vencedor.ID, 50)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(resultado)

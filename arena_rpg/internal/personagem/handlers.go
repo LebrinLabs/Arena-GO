@@ -8,52 +8,42 @@ import (
 
 func CriarPersonagem(w http.ResponseWriter, r *http.Request) {
 	var p Personagem
-
 	if err := json.NewDecoder(r.Body).Decode(&p); err != nil {
-		http.Error(w, "dados inválidos", http.StatusBadRequest)
+		http.Error(w, "JSON inválido", http.StatusBadRequest)
+		return
+	}
+	p.Nivel = 1
+	p.XP = 0
+
+	p, err := Inserir(p)
+	if err != nil {
+		http.Error(w, "erro ao salvar", http.StatusInternalServerError)
 		return
 	}
 
-	mu.Lock()
-	p.Id = proximoId
-	proximoId++
-	p.Nivel = 1
-	p.Xp = 0
-	personagens[p.Id] = p
-	mu.Unlock()
-
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated) // 201 Created
+	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(p)
-
 }
 
 func ListarPersonagens(w http.ResponseWriter, r *http.Request) {
-	mu.Lock()
-	lista := make([]Personagem, 0, len(personagens))
-
-	for _, p := range personagens {
-		lista = append(lista, p)
+	lista, err := Listar()
+	if err != nil {
+		http.Error(w, "erro ao listar", http.StatusInternalServerError)
+		return
 	}
-	mu.Unlock()
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(lista)
-
 }
 
-func BuscarPersonagemPorId( w http.ResponseWriter, r *http.Request) {
-	idStr := r.PathValue("id")
-	id, err := strconv.Atoi(idStr)
+func BuscarPersonagemPorId(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		http.Error(w, "id inválido", http.StatusBadRequest)
 		return
 	}
 
-	mu.Lock()
-	p, ok := personagens[id]
-	mu.Unlock()
-	
+	p, ok := Buscar(id)
 	if !ok {
 		http.Error(w, "personagem não encontrado", http.StatusNotFound)
 		return
